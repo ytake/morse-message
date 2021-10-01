@@ -1,10 +1,6 @@
 .PHONY: gen
-gen:pbgen-publisher pbgen-consumer
+gen:pbgen-go
 
-.PHONY: pbgen-publisher
+.PHONY: pbgen-go
 pbgen-publisher:
-	protoc --proto_path=protobuf --go_out=publisher/pbdef --go_opt=paths=source_relative protobuf/definition.proto
-
-.PHONY: pbgen-consumer
-pbgen-consumer:
-	protoc --proto_path=protobuf --go_out=consumer/pbdef --go_opt=paths=source_relative protobuf/definition.proto
+	protoc --proto_path=protobuf --go_out=go/pbdef --go_opt=paths=source_relative protobuf/definition.proto
