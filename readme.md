@@ -27,3 +27,20 @@ $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 ```bash
 $ make gen
 ```
+
+## Create Kafka Topics
+
+```bash
+$ docker-compose exec broker kafka-topics --create --zookeeper \
+zookeeper:2181 --replication-factor 1 --partitions 2 --topic user-action-created
+$ docker-compose exec broker kafka-topics --create --zookeeper \
+zookeeper:2181 --replication-factor 1 --partitions 2 --topic user-action-deleted
+$ docker-compose exec broker kafka-topics --create --zookeeper \
+zookeeper:2181 --replication-factor 1 --partitions 2 --topic created-user-action
+```
+
+delete topics 
+
+```bash
+$ docker-compose exec broker kafka-topics --zookeeper zookeeper:2181 --delete --topic user-action-created
+```

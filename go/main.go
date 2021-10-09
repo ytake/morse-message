@@ -14,11 +14,6 @@ func main() {
 	c := config.New()
 	l := log.NewLogger()
 	defer l.Flush()
-
-	kc, err := kafka.NewProducer(c.Kafka.BootstrapServers)
-	if err != nil {
-		l.ServerFatal("kafka producer error", zap.Error(err))
-	}
 	app := &cli.App{
 		Commands: []*cli.Command{
 			{
@@ -26,6 +21,11 @@ func main() {
 				Aliases: []string{"m:p"},
 				Usage:   "to Kafka",
 				Action: func(context *cli.Context) error {
+					kc, err := kafka.NewProducer(c.Kafka.BootstrapServers, c.Kafka.ActionCreatedSeparateTopic)
+					if err != nil {
+						l.Error("kafka producer error", zap.Error(err))
+						return err
+					}
 					cmp := &command.MessagePublisher{Client: kc}
 					return cmp.Run(context)
 				},
@@ -33,7 +33,7 @@ func main() {
 		},
 	}
 	app.Name = "MorseMessage (do not use for your application)"
-	err = app.Run(os.Args)
+	err := app.Run(os.Args)
 	if err != nil {
 		l.ServerFatal("console error", zap.Error(err))
 	}
