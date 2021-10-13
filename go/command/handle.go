@@ -8,7 +8,7 @@ import (
 )
 
 type MessagePublisher struct {
-	Client *kafka.Client
+	Client *kafka.Messenger
 }
 
 func (m *MessagePublisher) Run(_ *cli.Context) error {
@@ -21,7 +21,9 @@ func (m *MessagePublisher) Run(_ *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		m.Client.Publish(o)
+		if err = m.Client.Publish(o); err != nil {
+			return err
+		}
 	}
 	m.Client.Close()
 	return nil

@@ -3,49 +3,72 @@ package kafka
 import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/ytake/morse-message/publisher/message"
 )
 
 // Client Kafka client struct
 type Client struct {
-	producer *kafka.Producer
-	topic    *string
+	Producer *kafka.Producer
+}
+
+// NoKeyClient for no key
+type NoKeyClient struct {
+	kafka *Client
+	topic  *string
+}
+
+type Messenger struct {
+	publisher message.Publisher
 }
 
 // NewProducer create producer
-func NewProducer(broker, topic string) (*Client, error) {
+func NewProducer(broker string) (*Client, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers":  broker,
 		"message.timeout.ms": "300000",
 		"socket.timeout.ms": "30000",
 		"message.send.max.retries": "5",
 	})
-	return &Client{producer: p, topic: &topic}, err
+	return &Client{Producer: p}, err
 }
 
-func (c *Client) Publish(byte []byte) error {
+// NewNoKeyClient client for no key example
+func NewNoKeyClient(topic string, c *Client) *Messenger {
+	return &Messenger{publisher: &NoKeyClient{kafka: c, topic: &topic}}
+}
+
+func (c Messenger) Publish(byte []byte) error {
 	deliveryChan := make(chan kafka.Event)
-	err := c.producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: c.topic, Partition: kafka.PartitionAny},
+	err := c.publisher.Client().Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: c.publisher.RetrieveTopic(), Partition: kafka.PartitionAny},
 		Value:          byte,
 	}, deliveryChan)
 	if err != nil {
 		return err
 	}
 	e := <-deliveryChan
-	message := e.(*kafka.Message)
-	if message.TopicPartition.Error != nil {
+	m := e.(*kafka.Message)
+	if m.TopicPartition.Error != nil {
 		fmt.Printf("failed to deliver message: %v\n",
-			message.TopicPartition)
+			m.TopicPartition)
 	} else {
 		fmt.Printf("delivered to topic %s [%d] at offset %v\n",
-			*message.TopicPartition.Topic,
-			message.TopicPartition.Partition,
-			message.TopicPartition.Offset)
+			*m.TopicPartition.Topic,
+			m.TopicPartition.Partition,
+			m.TopicPartition.Offset)
 	}
 	return nil
 }
 
 // Close a Producer instance.
-func (c *Client) Close() {
-	c.producer.Close()
+func (c *Messenger) Close() {
+	c.publisher.Client().Close()
+}
+
+func (c NoKeyClient) Client() *kafka.Producer {
+	return c.kafka.Producer
+}
+
+func (c NoKeyClient) RetrieveTopic() *string {
+	return c.topic
 }

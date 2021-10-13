@@ -21,12 +21,12 @@ func main() {
 				Aliases: []string{"m:p"},
 				Usage:   "to Kafka",
 				Action: func(context *cli.Context) error {
-					kc, err := kafka.NewProducer(c.Kafka.BootstrapServers, c.Kafka.ActionCreatedSeparateTopic)
+					kc, err := kafka.NewProducer(c.Kafka.BootstrapServers)
 					if err != nil {
 						l.Error("kafka producer error", zap.Error(err))
 						return err
 					}
-					cmp := &command.MessagePublisher{Client: kc}
+					cmp := &command.MessagePublisher{Client: kafka.NewNoKeyClient(c.Kafka.ActionCreatedSeparateTopic, kc)}
 					return cmp.Run(context)
 				},
 			},
