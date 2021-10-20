@@ -7,21 +7,65 @@ import (
 	"time"
 )
 
+func makeTimestampForProto() *timestamppb.Timestamp {
+	t, _ := time.Parse(time.RFC3339, "2020-09-01T21:46:43Z")
+	return timestamppb.New(t)
+}
+
 func NoKeyMessages() ([]*pbd.UserAction, error) {
 	var sua []*pbd.UserAction
-	for i := 0; i < 100; i++ {
-		t, err := time.Parse(time.RFC3339, "2020-09-01T21:46:43Z")
-		if err != nil {
-			return sua, err
-		}
-		sua = append(sua, &pbd.UserAction{
-			UserId:        rand.Uint32(),
-			CorrelationId: rand.Uint64(),
-			Event:         randEventType(),
-			Name:          "aaa",
-			Created:       timestamppb.New(t),
-		})
-	}
+	sua = append(sua, &pbd.UserAction{
+		UserId:  uint32(1),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa1",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(2),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa2",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(1),
+		Event:   pbd.UserAction_DELETED,
+		Name:    "aaa1",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(3),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa3",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(6),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa6",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(18),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa18",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(90),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa90",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(93),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa93",
+		Created: makeTimestampForProto(),
+	}, &pbd.UserAction{
+		UserId:  uint32(90),
+		Event:   pbd.UserAction_DELETED,
+		Name:    "aaa90",
+		Created: makeTimestampForProto(),
+	},&pbd.UserAction{
+		UserId:  uint32(100),
+		Event:   pbd.UserAction_CREATED,
+		Name:    "aaa100",
+		Created: makeTimestampForProto(),
+	},
+	)
 	return sua, nil
 }
 

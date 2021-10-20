@@ -7,3 +7,9 @@ type Publisher interface {
 	Client() *kafka.Producer
 	RetrieveTopic() *string
 }
+
+// Subscriber interface
+type Subscriber interface {
+	Client() *kafka.Consumer
+	RetrieveTopic() string
+}

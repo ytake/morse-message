@@ -31,16 +31,18 @@ $ make gen
 ## Create Kafka Topics
 
 ```bash
-$ docker-compose exec broker kafka-topics --create --zookeeper \
+$ docker-compose exec broker pub-topics --create --zookeeper \
 zookeeper:2181 --replication-factor 1 --partitions 2 --topic user-action-created
-$ docker-compose exec broker kafka-topics --create --zookeeper \
+$ docker-compose exec broker pub-topics --create --zookeeper \
 zookeeper:2181 --replication-factor 1 --partitions 2 --topic user-action-deleted
-$ docker-compose exec broker kafka-topics --create --zookeeper \
+$ docker-compose exec broker pub-topics --create --zookeeper \
 zookeeper:2181 --replication-factor 1 --partitions 2 --topic created-user-action
+$ docker-compose exec broker pub-topics --create --zookeeper \
+zookeeper:2181 --replication-factor 1 --partitions 1 --topic single-created-user-action
 ```
 
 delete topics 
 
 ```bash
-$ docker-compose exec broker kafka-topics --zookeeper zookeeper:2181 --delete --topic user-action-created
+$ docker-compose exec broker pub-topics --zookeeper zookeeper:2181 --delete --topic user-action-created
 ```

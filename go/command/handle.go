@@ -2,13 +2,13 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
-	"github.com/ytake/morse-message/publisher/kafka"
+	"github.com/ytake/morse-message/publisher/pub"
 	"github.com/ytake/morse-message/publisher/message"
 	"google.golang.org/protobuf/proto"
 )
 
 type MessagePublisher struct {
-	Client *kafka.Messenger
+	Client *pub.Messenger
 }
 
 func (m *MessagePublisher) Run(_ *cli.Context) error {

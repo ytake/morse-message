@@ -1,4 +1,4 @@
-package kafka
+package pub
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ func NewNoKeyClient(topic string, c *Client) *Messenger {
 	return &Messenger{publisher: &NoKeyClient{kafka: c, topic: &topic}}
 }
 
-func (c Messenger) Publish(byte []byte) error {
+func (c *Messenger) Publish(byte []byte) error {
 	deliveryChan := make(chan kafka.Event)
 	err := c.publisher.Client().Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: c.publisher.RetrieveTopic(), Partition: kafka.PartitionAny},

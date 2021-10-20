@@ -2,43 +2,36 @@ package config
 
 import "os"
 
-type App struct {
-	Kafka struct {
-		BootstrapServers           string
-		ActionCreatedSeparateTopic string
-		ActionDeletedSeparateTopic string
-		ActionCreatedTopic         string
+type (
+	Kafka struct{}
+	App   struct {
+		Kafka Kafka
 	}
-}
+)
 
 // New app config
 func New() *App {
 	return &App{
-		Kafka: struct {
-			BootstrapServers           string
-			ActionCreatedSeparateTopic string
-			ActionDeletedSeparateTopic string
-			ActionCreatedTopic         string
-		}{
-			BootstrapServers:           kafkaBootstrapServers(),
-			ActionCreatedSeparateTopic: userActionCreatedSeparateTopic(),
-			ActionDeletedSeparateTopic: userActionDeletedSeparateTopic(),
-			ActionCreatedTopic:         userActionTopic()},
+		Kafka: Kafka{},
 	}
 }
 
-func kafkaBootstrapServers() string {
+func (k Kafka) KafkaBootstrapServers() string {
 	return os.Getenv("KAFKA_BOOTSTRAP_SERVERS")
 }
 
-func userActionCreatedSeparateTopic() string {
+func (k Kafka) UserActionCreatedSeparateTopic() string {
 	return "user-action-created"
 }
 
-func userActionDeletedSeparateTopic() string {
+func (k Kafka) UserActionDeletedSeparateTopic() string {
 	return "user-action-deleted"
 }
 
-func userActionTopic() string {
+func (k Kafka) UserActionTopic() string {
 	return "created-user-action"
+}
+
+func (k Kafka) SingleUserActionTopic() string {
+	return "single-created-user-action"
 }

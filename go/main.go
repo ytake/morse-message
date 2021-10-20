@@ -4,8 +4,8 @@ import (
 	"github.com/urfave/cli/v2"
 	"github.com/ytake/morse-message/publisher/command"
 	"github.com/ytake/morse-message/publisher/config"
-	"github.com/ytake/morse-message/publisher/kafka"
 	"github.com/ytake/morse-message/publisher/log"
+	"github.com/ytake/morse-message/publisher/pub"
 	"go.uber.org/zap"
 	"os"
 )
@@ -17,16 +17,16 @@ func main() {
 	app := &cli.App{
 		Commands: []*cli.Command{
 			{
-				Name:    "message:publish",
-				Aliases: []string{"m:p"},
+				Name:    "message:nokey_publish",
+				Aliases: []string{"m:np"},
 				Usage:   "to Kafka",
 				Action: func(context *cli.Context) error {
-					kc, err := kafka.NewProducer(c.Kafka.BootstrapServers)
+					kc, err := pub.NewProducer(c.Kafka.KafkaBootstrapServers())
 					if err != nil {
-						l.Error("kafka producer error", zap.Error(err))
+						l.Error("pub producer error", zap.Error(err))
 						return err
 					}
-					cmp := &command.MessagePublisher{Client: kafka.NewNoKeyClient(c.Kafka.ActionCreatedSeparateTopic, kc)}
+					cmp := &command.MessagePublisher{Client: pub.NewNoKeyClient(c.Kafka.UserActionTopic(), kc)}
 					return cmp.Run(context)
 				},
 			},
