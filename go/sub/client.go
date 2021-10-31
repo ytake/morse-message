@@ -49,7 +49,7 @@ func (c *Receiver) Subscribe(reader stream.Reader) error {
 		return err
 	}
 	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, os.Interrupt)
 	run := true
 	for run == true {
 		select {
