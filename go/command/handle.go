@@ -2,8 +2,8 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
-	"github.com/ytake/morse-message/publisher/pub"
 	"github.com/ytake/morse-message/publisher/message"
+	"github.com/ytake/morse-message/publisher/pub"
 	"google.golang.org/protobuf/proto"
 )
 
