@@ -1,6 +1,7 @@
 package sub
 
 import (
+	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/ytake/morse-message/publisher/message"
 	"github.com/ytake/morse-message/publisher/stream"
@@ -31,9 +32,9 @@ func NewConsumer(servers, group string) (*Client, error) {
 		"bootstrap.servers":     servers,
 		"broker.address.family": "v4",
 		"group.id":              group,
-		"session.timeout.ms":    6000,
-		// "enable.auto.commit":            "false", // 頭から実行したい場合にどうぞ
-		"auto.offset.reset": "earliest",
+		"session.timeout.ms":    30000,
+		"enable.auto.commit":    "false", // 頭から実行したい場合にどうぞ
+		"auto.offset.reset":     "earliest",
 	})
 	return &Client{Consumer: c}, err
 }
@@ -41,7 +42,7 @@ func NewConsumer(servers, group string) (*Client, error) {
 func (c *Receiver) Subscribe(reader stream.Reader) error {
 	err := c.subscriber.Client().Subscribe(c.subscriber.RetrieveTopic(),
 		func(c *kafka.Consumer, event kafka.Event) error {
-			// fmt.Sprintf("rebalanced: %s", event)
+			fmt.Sprintf("rebalanced: %s", event)
 			return nil
 		})
 	defer c.subscriber.Client().Close()
