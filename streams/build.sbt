@@ -1,21 +1,19 @@
 ThisBuild / version := "1.0"
-ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / scalaVersion := "2.13.7"
 ThisBuild / organization := "net.jp.ytake"
 
-mainClass in assembly := Some("net.jp.ytake.TopicGroupingStreams")
-
+name := "split-brain-groups"
 logLevel := Level.Error
-
 resolvers ++= Seq(
   "mvn" at "https://mvnrepository.com/artifact",
   "confluent" at "https://packages.confluent.io/maven"
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-library" % "2.13.6",
+  "org.scala-lang" % "scala-library" % "2.13.7",
   "com.typesafe" % "config" % "1.2.0",
-  "io.confluent" % "kafka-streams-protobuf-serde" % "6.1.3",
-  "org.apache.kafka" % "kafka-streams" % "2.7.1",
+  "io.confluent" % "kafka-streams-protobuf-serde" % "6.1.3" % "provided",
+  "org.apache.kafka" % "kafka-streams" % "2.7.1" % "provided",
   "org.apache.kafka" % "kafka-streams-test-utils" % "2.7.1" % Test,
   "junit" % "junit" % "4.13" % Test,
   "org.scalatest" %% "scalatest" % "3.2.7" % Test
