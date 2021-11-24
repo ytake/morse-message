@@ -14,7 +14,7 @@ type Client struct {
 // NoKeyClient for no key
 type NoKeyClient struct {
 	kafka *Client
-	topic  *string
+	topic *string
 }
 
 type Messenger struct {
@@ -24,9 +24,10 @@ type Messenger struct {
 // NewProducer create producer
 func NewProducer(broker string) (*Client, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers":  broker,
-		"message.timeout.ms": "300000",
-		"socket.timeout.ms": "30000",
+		"bootstrap.servers":        broker,
+		"api.version.request":      "false",
+		"message.timeout.ms":       "300000",
+		"socket.timeout.ms":        "30000",
 		"message.send.max.retries": "5",
 	})
 	return &Client{Producer: p}, err
