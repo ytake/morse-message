@@ -6,11 +6,11 @@ import (
 	"github.com/ytake/morse-message/publisher/sub"
 )
 
-type MessageSubscriber struct {
+type SinglePartitionSubscriber struct {
 	Client *sub.Receiver
 }
 
 // Run Kafka Topic Subscriber
-func (m *MessageSubscriber) Run(_ *cli.Context) error {
+func (m *SinglePartitionSubscriber) Run(_ *cli.Context) error {
 	return m.Client.Subscribe(&message.NoKeyMessagesReceive{})
 }

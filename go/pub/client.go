@@ -11,12 +11,6 @@ type Client struct {
 	Producer *kafka.Producer
 }
 
-// NoKeyClient for no key
-type NoKeyClient struct {
-	kafka *Client
-	topic *string
-}
-
 type Messenger struct {
 	publisher message.Publisher
 }
@@ -33,16 +27,15 @@ func NewProducer(broker string) (*Client, error) {
 	return &Client{Producer: p}, err
 }
 
-// NewNoKeyClient client for no key example
-func NewNoKeyClient(topic string, c *Client) *Messenger {
-	return &Messenger{publisher: &NoKeyClient{kafka: c, topic: &topic}}
-}
-
+// Publish to kafka bootstrap server
 func (c *Messenger) Publish(byte []byte) error {
 	deliveryChan := make(chan kafka.Event)
 	err := c.publisher.Client().Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: c.publisher.RetrieveTopic(), Partition: kafka.PartitionAny},
-		Value:          byte,
+		TopicPartition: kafka.TopicPartition{
+			Topic:     c.publisher.RetrieveTopic(),
+			Partition: c.publisher.RetrievePartition(),
+		},
+		Value: byte,
 	}, deliveryChan)
 	if err != nil {
 		return err
@@ -64,12 +57,4 @@ func (c *Messenger) Publish(byte []byte) error {
 // Close a Producer instance.
 func (c *Messenger) Close() {
 	c.publisher.Client().Close()
-}
-
-func (c NoKeyClient) Client() *kafka.Producer {
-	return c.kafka.Producer
-}
-
-func (c NoKeyClient) RetrieveTopic() *string {
-	return c.topic
 }

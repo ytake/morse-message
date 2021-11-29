@@ -6,6 +6,7 @@ import "github.com/confluentinc/confluent-kafka-go/kafka"
 type Publisher interface {
 	Client() *kafka.Producer
 	RetrieveTopic() *string
+	RetrievePartition() int32
 }
 
 // Subscriber interface

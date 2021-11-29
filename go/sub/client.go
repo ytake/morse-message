@@ -16,12 +16,6 @@ type Client struct {
 	Consumer *kafka.Consumer
 }
 
-// NoKeyClient for no key
-type NoKeyClient struct {
-	kafka *Client
-	topic string
-}
-
 type Receiver struct {
 	subscriber message.Subscriber
 }
@@ -29,12 +23,15 @@ type Receiver struct {
 // NewConsumer make kafka consumer
 func NewConsumer(servers, group string) (*Client, error) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":     servers,
-		"broker.address.family": "v4",
-		"group.id":              group,
-		"session.timeout.ms":    30000,
-		"enable.auto.commit":    "false", // 頭から実行したい場合にどうぞ
-		"auto.offset.reset":     "earliest",
+		"bootstrap.servers":               servers,
+		"broker.address.family":           "v4",
+		"group.id":                        group,
+		"session.timeout.ms":              30000,
+		"enable.auto.commit":              "false", // 頭から実行したい場合にどうぞ
+		"auto.offset.reset":               "earliest",
+		"go.application.rebalance.enable": true,
+		"enable.partition.eof":            true,
+		"go.events.channel.enable":        true,
 	})
 	return &Client{Consumer: c}, err
 }
@@ -81,17 +78,4 @@ func (c *Receiver) Subscribe(reader stream.Reader) error {
 		}
 	}
 	return nil
-}
-
-// NewNoKeyClient client for no key example
-func NewNoKeyClient(topic string, c *Client) *Receiver {
-	return &Receiver{subscriber: &NoKeyClient{kafka: c, topic: topic}}
-}
-
-func (c NoKeyClient) Client() *kafka.Consumer {
-	return c.kafka.Consumer
-}
-
-func (c NoKeyClient) RetrieveTopic() string {
-	return c.topic
 }

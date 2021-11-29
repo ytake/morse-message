@@ -12,6 +12,7 @@ func makeTimestampForProto() *timestamppb.Timestamp {
 	return timestamppb.New(t)
 }
 
+// NoKeyMessages key指定なしサンプルイベントスライス
 func NoKeyMessages() ([]*pbd.UserAction, error) {
 	var sua []*pbd.UserAction
 	sua = append(sua, &pbd.UserAction{
