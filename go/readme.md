@@ -16,7 +16,7 @@ $ go run --tags dynamic main.go
 ## Env 
 
 ```bash
-$ export KAFKA_BOOTSTRAP_SERVERS=127.0.0.1:9092
+$ export KAFKA_BOOTSTRAP_SERVERS=127.0.0.1:29092
 ```
 
 ## Run 
@@ -28,4 +28,3 @@ publish messages
 ```bash
 $ go run --tags dynamic main.go m:np
 ```
-

@@ -5,7 +5,6 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/ytake/morse-message/publisher/message"
 	"github.com/ytake/morse-message/publisher/stream"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,8 +25,8 @@ func NewConsumer(servers, group string) (*Client, error) {
 		"bootstrap.servers":               servers,
 		"broker.address.family":           "v4",
 		"group.id":                        group,
-		"session.timeout.ms":              30000,
-		"enable.auto.commit":              "false", // 頭から実行したい場合にどうぞ
+		"session.timeout.ms":              6000,
+		// "enable.auto.commit":              "false", // 頭から実行したい場合にどうぞ
 		"auto.offset.reset":               "earliest",
 		"go.application.rebalance.enable": true,
 		"enable.partition.eof":            true,
@@ -37,7 +36,8 @@ func NewConsumer(servers, group string) (*Client, error) {
 }
 
 func (c *Receiver) Subscribe(reader stream.Reader) error {
-	err := c.subscriber.Client().Subscribe(c.subscriber.RetrieveTopic(),
+	topics := []string{c.subscriber.RetrieveTopic()}
+	err := c.subscriber.Client().SubscribeTopics(topics,
 		func(c *kafka.Consumer, event kafka.Event) error {
 			fmt.Sprintf("rebalanced: %s", event)
 			return nil
@@ -52,27 +52,32 @@ func (c *Receiver) Subscribe(reader stream.Reader) error {
 	for run == true {
 		select {
 		case sig := <-sigchan:
-			log.Printf("Caught signal %v: terminating\n", sig)
+			fmt.Printf("Caught signal %v: terminating\n", sig)
 			run = false
-		default:
-			ev := c.subscriber.Client().Poll(100)
-			if ev == nil {
-				continue
-			}
+
+		case ev := <-c.subscriber.Client().Events():
 			switch e := ev.(type) {
+			case kafka.AssignedPartitions:
+				fmt.Fprintf(os.Stderr, "%% %v\n", e)
+				c.subscriber.Client().Assign(e.Partitions)
+			case kafka.RevokedPartitions:
+				fmt.Fprintf(os.Stderr, "%% %v\n", e)
+				c.subscriber.Client().Unassign()
 			case *kafka.Message:
-				if e.Headers != nil {
-					// logger
-				}
+				fmt.Fprintf(os.Stderr, "partition %s", e.TopicPartition)
 				if err := reader.Proceed(e.Value); err != nil {
 					// logger
 				}
+			case kafka.PartitionEOF:
+				fmt.Printf("%% Reached %v\n", e)
 			case kafka.Error:
+				fmt.Println(e.String())
 				// logger
 				if e.Code() == kafka.ErrAllBrokersDown {
 					run = false
 				}
 			default:
+				fmt.Println(e.String())
 				// logger
 			}
 		}

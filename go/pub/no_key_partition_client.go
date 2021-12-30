@@ -10,8 +10,8 @@ type NoKeyPartitionClient struct {
 }
 
 // NewNoKeyPartitionClient client for no key example
-func NewNoKeyPartitionClient(topic string, partition int32, c *Client) *Messenger {
-	return &Messenger{publisher: &NoKeyPartitionClient{kafka: c, topic: &topic, partition: partition}}
+func NewNoKeyPartitionClient(topic string, c *Client) *Messenger {
+	return &Messenger{publisher: &NoKeyPartitionClient{kafka: c, topic: &topic}}
 }
 
 func (c NoKeyPartitionClient) Client() *kafka.Producer {
@@ -23,5 +23,5 @@ func (c NoKeyPartitionClient) RetrieveTopic() *string {
 }
 
 func (c NoKeyPartitionClient) RetrievePartition() int32 {
-	return c.partition
+	return kafka.PartitionAny
 }
