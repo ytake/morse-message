@@ -1,23 +1,30 @@
 ThisBuild / version := "1.0"
-ThisBuild / scalaVersion := "2.13.7"
+ThisBuild / scalaVersion := "2.12.10"
 ThisBuild / organization := "net.jp.ytake"
 
 name := "split-brain-groups"
 logLevel := Level.Error
 resolvers ++= Seq(
-  "mvn" at "https://mvnrepository.com/artifact",
-  "confluent" at "https://packages.confluent.io/maven"
+  "mvn" at "https://mvnrepository.com/artifact"
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-library" % "2.13.7",
+  "org.scala-lang" % "scala-library" % "2.12.10",
   "com.typesafe" % "config" % "1.2.0",
-  "io.confluent" % "kafka-streams-protobuf-serde" % "6.1.3" % "provided",
-  "org.apache.kafka" % "kafka-streams" % "2.7.1" % "provided",
-  "org.apache.kafka" % "kafka-streams-test-utils" % "2.7.1" % Test,
+  "org.apache.spark" %% "spark-core" % "3.0.3" % "provided",
+  "org.apache.spark" %% "spark-sql" % "3.0.3" % "provided",
+  "org.apache.spark" %% "spark-sql-kafka-0-10" % "3.0.3",
+  "com.thesamet.scalapb" %% "sparksql-scalapb" % "0.11.0",
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
   "junit" % "junit" % "4.13" % Test,
   "org.scalatest" %% "scalatest" % "3.2.7" % Test
 )
+
+assembly / assemblyShadeRules := Seq(
+  ShadeRule.rename("com.google.protobuf.**" -> "shadeproto.@1").inAll,
+  ShadeRule.rename("scala.collection.compat.**" -> "scalacompat.@1").inAll
+)
+
 assembly / assemblyMergeStrategy := {
   case m if m.toLowerCase.endsWith("manifest.mf") => MergeStrategy.discard
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard

@@ -3,7 +3,7 @@ syntax = "proto3";
 package morse;
 import "google/protobuf/timestamp.proto";
 
-option java_package = "com.github.ytake.morse-message.combine";
+option java_package = "com.github.ytake.morse.message.combine";
 option go_package = "github.com/ytake/morse-message/pbd";
 
 message UserAction {
