@@ -14,6 +14,11 @@ func (nk *NoKeyMessagesReceive) Proceed(message []byte) error {
 	if err := proto.Unmarshal(message, u); err != nil {
 		return err
 	}
-	fmt.Println(u.Event, u.Name, u.UserId, u.CorrelationId)
+	fmt.Printf(
+		"Event: %v\nName: %v\nUserID: %v\nCorrelationID %v",
+		u.GetEvent(),
+		u.GetName(),
+		u.GetUserId(),
+		u.GetCorrelationId())
 	return nil
 }

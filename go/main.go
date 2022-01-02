@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"github.com/ytake/morse-message/publisher/command"
 	"github.com/ytake/morse-message/publisher/config"
+	"github.com/ytake/morse-message/publisher/console"
 	"github.com/ytake/morse-message/publisher/log"
 	"github.com/ytake/morse-message/publisher/pub"
 	"github.com/ytake/morse-message/publisher/sub"
@@ -27,8 +28,9 @@ func main() {
 						l.Error("pub producer error", zap.Error(err))
 						return err
 					}
-					cmp := &command.SinglePartitionPublisher{
-						Client: pub.NewSinglePartitionClient(c.Kafka.SingleUserActionTopic(), pc)}
+					cmp := &console.SinglePartitionPublisher{
+						Command: command.UserAction{
+							Client: pub.NewSinglePartitionClient(c.Kafka.SingleUserActionTopic(), pc)}}
 					return cmp.Run(context)
 				},
 			},
@@ -42,7 +44,7 @@ func main() {
 						l.Error("subscriber error", zap.Error(err))
 						return err
 					}
-					cmp := &command.SinglePartitionSubscriber{
+					cmp := &console.SinglePartitionSubscriber{
 						Client: sub.NewSinglePartitionClient(c.Kafka.SingleUserActionTopic(), sc)}
 					return cmp.Run(context)
 				},
@@ -57,10 +59,9 @@ func main() {
 						l.Error("pub producer error", zap.Error(err))
 						return err
 					}
-					cmp := &command.NoKeyPartitionPublisher{
-						Client: pub.NewNoKeyPartitionClient(
-							c.Kafka.NoKeyUserActionTopic(),
-							pc)}
+					cmp := &console.NoKeyPartitionPublisher{
+						Command: command.UserAction{
+							Client: pub.NewNoKeyPartitionClient(c.Kafka.NoKeyUserActionTopic(), pc)}}
 					return cmp.Run(context)
 				},
 			},
@@ -74,7 +75,7 @@ func main() {
 						l.Error("subscriber error", zap.Error(err))
 						return err
 					}
-					cmp := &command.MultiplePartitionSubscriber{
+					cmp := &console.MultiplePartitionSubscriber{
 						Client: sub.NewPartitionClient(c.Kafka.NoKeyUserActionTopic(), sc)}
 					return cmp.Run(context)
 				},

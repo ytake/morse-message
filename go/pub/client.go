@@ -15,6 +15,12 @@ type Messenger struct {
 	publisher message.Publisher
 }
 
+// RequestParameter for publisher
+type RequestParameter struct {
+	Byte []byte
+	Key  []byte
+}
+
 // NewProducer create producer
 func NewProducer(broker string) (*Client, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
@@ -28,15 +34,19 @@ func NewProducer(broker string) (*Client, error) {
 }
 
 // Publish to kafka bootstrap server
-func (c *Messenger) Publish(byte []byte) error {
+func (c *Messenger) Publish(parameter RequestParameter) error {
 	deliveryChan := make(chan kafka.Event)
-	err := c.publisher.Client().Produce(&kafka.Message{
+	km := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{
 			Topic:     c.publisher.RetrieveTopic(),
 			Partition: c.publisher.RetrievePartition(),
 		},
-		Value: byte,
-	}, deliveryChan)
+		Value: parameter.Byte,
+	}
+	if len(parameter.Key) != 0 {
+		km.Key = parameter.Key
+	}
+	err := c.publisher.Client().Produce(km, deliveryChan)
 	if err != nil {
 		return err
 	}

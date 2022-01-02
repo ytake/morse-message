@@ -8,8 +8,7 @@ import (
 )
 
 func makeTimestampForProto() *timestamppb.Timestamp {
-	t, _ := time.Parse(time.RFC3339, "2020-09-01T21:46:43Z")
-	return timestamppb.New(t)
+	return timestamppb.Now()
 }
 
 // NoKeyMessages key指定なしサンプルイベントスライス
