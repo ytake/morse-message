@@ -17,8 +17,7 @@ object KafkaDataFrame {
       .option("kafka.bootstrap.servers", cf.bootstrapServers)
       .option("enable.auto.commit", "false")
       .option("subscribe", cf.topic)
-      .option("startingOffsets", "earliest")
-      .option("failOnDataLoss", "false")
+      .option("auto.offset.reset", "earliest")
       .load()
   }
 }

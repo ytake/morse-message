@@ -35,6 +35,25 @@ object StructuredStreamingRunner extends App {
   val parseUserAction = ProtoSQL.udf { bytes: Array[Byte] => UserAction.parseFrom(bytes) }
 
   // create view "events"
+  /**
+   * origin
+   * root
+   * |-- key: string (nullable = true)
+   * |-- value: struct (nullable = false)
+   * |    |-- correlationId: long (nullable = true)
+   * |    |-- event: string (nullable = true)
+   * |    |-- userId: integer (nullable = true)
+   * |    |-- name: string (nullable = true)
+   * |    |-- created: struct (nullable = true)
+   * |    |    |-- seconds: long (nullable = true)
+   * |    |    |-- nanos: integer (nullable = true)
+   * |-- correlation_id: long (nullable = true)
+   * |-- event: string (nullable = true)
+   * |-- user_id: integer (nullable = true)
+   * |-- name: string (nullable = true)
+   * |-- created: long (nullable = true)
+   * |-- created_timestamp: timestamp (nullable = true)
+   */
   df
     .select(col("key"), col("value"))
     .withColumn("key", col("key").cast(StringType))
@@ -45,18 +64,20 @@ object StructuredStreamingRunner extends App {
     .withColumn("name", col("value.name").cast(StringType))
     .withColumn("created", col("value.created.seconds").cast(LongType))
     .withColumn("created_timestamp", col("value.created.seconds").cast(TimestampType))
+    // for aggregation / window
+    // .withWatermark("created_timestamp", "10 minutes")
     .drop("value")
     .createTempView("events")
 
   /**
-   * table example
-   * +----+--------------+-------+-------+------+----------+-------------------+
-   * | key|correlation_id|  event|user_id|  name|   created|  created_timestamp|
-   * +----+--------------+-------+-------+------+----------+-------------------+
-   * |null|             0|CREATED|      1|  aaa1|1598996803|2020-09-02 06:46:43|
-   * |null|             0|DELETED|      1|  aaa1|1598996803|2020-09-02 06:46:43|
-   * |null|             0|CREATED|      3|  aaa3|1598996803|2020-09-02 06:46:43|
-   * +----+--------------+-------+-------+------+----------+-------------------+
+   * root
+   * |-- key: string (nullable = true)
+   * |-- correlation_id: long (nullable = true)
+   * |-- event: string (nullable = true)
+   * |-- user_id: integer (nullable = true)
+   * |-- name: string (nullable = true)
+   * |-- created: long (nullable = true)
+   * |-- created_timestamp: timestamp (nullable = true)
    */
   ss
     .sql("SELECT * FROM events")
