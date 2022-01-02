@@ -15,9 +15,8 @@ object KafkaDataFrame {
     ss.readStream
       .format("kafka")
       .option("kafka.bootstrap.servers", cf.bootstrapServers)
-      .option("enable.auto.commit", "false")
       .option("subscribe", cf.topic)
-      .option("auto.offset.reset", "earliest")
+      .option("startingOffsets", "earliest")
       .load()
   }
 }
