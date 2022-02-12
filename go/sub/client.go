@@ -26,7 +26,7 @@ func NewConsumer(servers, group string) (*Client, error) {
 		"broker.address.family":           "v4",
 		"group.id":                        group,
 		"session.timeout.ms":              6000,
-		// "enable.auto.commit":              "false", // 頭から実行したい場合にどうぞ
+		"enable.auto.commit":              "false", // 頭から実行したい場合にどうぞ
 		"auto.offset.reset":               "earliest",
 		"go.application.rebalance.enable": true,
 		"enable.partition.eof":            true,

@@ -13,6 +13,9 @@ type (
 	NoKeyPartitionPublisher struct {
 		Command command.UserAction
 	}
+	HasKeyPartitionPublisher struct {
+		Command command.UserAction
+	}
 )
 
 func (m *SinglePartitionPublisher) Run(_ *cli.Context) error {
@@ -29,4 +32,12 @@ func (m *NoKeyPartitionPublisher) Run(_ *cli.Context) error {
 		return err
 	}
 	return m.Command.UserRegistrationForNoKey(messages)
+}
+
+func (m *HasKeyPartitionPublisher) Run(_ *cli.Context) error {
+	messages, err := message.NoKeyMessages()
+	if err != nil {
+		return err
+	}
+	return m.Command.UserRegistrationForHasKey(messages)
 }
