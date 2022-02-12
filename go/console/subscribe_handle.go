@@ -16,10 +16,10 @@ type MultiplePartitionSubscriber struct {
 
 // Run Kafka Topic Subscriber
 func (m *SinglePartitionSubscriber) Run(_ *cli.Context) error {
-	return m.Client.Subscribe(&message.NoKeyMessagesReceive{})
+	return m.Client.Subscribe(&message.MessagesReceive{})
 }
 
 // Run Kafka Topic Subscriber
 func (m *MultiplePartitionSubscriber) Run(_ *cli.Context) error {
-	return m.Client.Subscribe(&message.NoKeyMessagesReceive{})
+	return m.Client.Subscribe(&message.MessagesReceive{})
 }
