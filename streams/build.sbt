@@ -26,16 +26,8 @@ assembly / assemblyShadeRules := Seq(
 )
 
 assembly / assemblyMergeStrategy := {
-  case m if m.toLowerCase.endsWith("manifest.mf") => MergeStrategy.discard
-  case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
-  case PathList("org","aopalliance", xs @ _*) => MergeStrategy.last
-  case PathList("javax", "inject", xs @ _*) => MergeStrategy.last
-  case PathList("javax", "servlet", xs @ _*) => MergeStrategy.last
-  case PathList("javax", "activation", xs @ _*) => MergeStrategy.last
-  case PathList("org", "apache", xs @ _*) => MergeStrategy.last
-  case PathList("com", "google", xs @ _*) => MergeStrategy.last
-  case "plugin.properties" => MergeStrategy.last
-  case "log4j.properties" => MergeStrategy.last
+  case PathList(ps@_*) if ps.last endsWith ".class" => MergeStrategy.first
+  case PathList("org", "apache", xs @ _*) => MergeStrategy.first
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
