@@ -21,7 +21,6 @@ class SparkApplication(appName: String, checkPoint: String) {
     spark.hadoopConfiguration.set("parquet.enable.dictionary", "false")
     spark.hadoopConfiguration.set("mapreduce.fileoutputcommitter.algorithm.version", "2")
     spark.hadoopConfiguration.set("mapreduce.fileoutputcommitter.cleanup-failures.ignored", "true")
-    spark.hadoopConfiguration.set("mapreduce.outputcommitter.factory.scheme.s3a", "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory")
     spark.setCheckpointDir(checkPoint)
     spark.setLogLevel("WARN")
     SparkSession.builder
